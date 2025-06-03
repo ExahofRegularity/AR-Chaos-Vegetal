@@ -14,14 +14,19 @@
       embedded
       arjs="sourceType: webcam; debugUIEnabled: false;"
     >
-      
+      <script>
+  // Paramètres
+  const markerWidthInMeters = 0.1; // 10 cm = 0.1 m
+  const modelOriginalSizeInMeters = 2.0; // Taille originale du modèle (ex: 2m dans Blender)
+
+  // Calcul automatique de l'échelle
+  const scaleFactor = markerWidthInMeters / modelOriginalSizeInMeters;
+</script>
       <a-marker type="pattern" url="marker.patt">
       <a-entity
           gltf-model="url(model.glb)"
-          scale="0.05 0.05 0.05"
-          position="0 0 0"
-          rotation="0 180 0"
-        ></a-entity>
+          scale="${scaleFactor} ${scaleFactor} ${scaleFactor}" >
+</a-entity>
 </a-marker>
       <a-entity camera></a-entity>
     </a-scene>
