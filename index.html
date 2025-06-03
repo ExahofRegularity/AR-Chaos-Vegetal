@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>AR.js - Cube sur marqueur</title>
+    <title>AR.js - Modèle 3D</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
     <style>
@@ -14,21 +14,23 @@
       embedded
       arjs="sourceType: webcam; debugUIEnabled: false;"
     >
-      <script>
-  // Paramètres
-  const markerWidthInMeters = 0.1; // 10 cm = 0.1 m
-  const modelOriginalSizeInMeters = 2.0; // Taille originale du modèle (ex: 2m dans Blender)
-
-  // Calcul automatique de l'échelle
-  const scaleFactor = markerWidthInMeters / modelOriginalSizeInMeters;
-</script>
       <a-marker type="pattern" url="marker.patt">
-      <a-entity
-          gltf-model="url(model.glb)"
-          scale="${scaleFactor} ${scaleFactor} ${scaleFactor}" >
-</a-entity>
-</a-marker>
+        <a-entity id="my-model" gltf-model="url(model.glb)"></a-entity>
+      </a-marker>
       <a-entity camera></a-entity>
     </a-scene>
+
+    <script>
+      document.querySelector('a-scene').addEventListener('loaded', function() {
+        const markerWidth = 0.1; // 10cm
+        const modelSize = 2.0; // Taille originale
+        
+        const model = document.getElementById('my-model');
+        model.addEventListener('model-loaded', function() {
+          const scale = markerWidth / modelSize;
+          model.setAttribute('scale', scale + ' ' + scale + ' ' + scale);
+        });
+      });
+    </script>
   </body>
 </html>
