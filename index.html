@@ -16,46 +16,11 @@
       arjs="sourceType: webcam; debugUIEnabled: false;"
     >
       <a-marker type="pattern" url="marker.patt">
-        <a-entity id="my-model" gltf-model="url(model.glb)"></a-entity>
+        <a-entity id="my-model" gltf-model="url(model.glb)" scale="0.1 0.1 0.1" ></a-entity>
       </a-marker>
       <a-entity camera></a-entity>
     </a-scene>
 
-    <script>
-      document.querySelector('a-scene').addEventListener('loaded', function() {
-        const model = document.getElementById('my-model');
-        
-        model.addEventListener('model-loaded', function() {
-          // Attend que Three.js soit prêt
-          setTimeout(() => {
-            if (!model.object3D) {
-              console.error("object3D non disponible");
-              return;
-            }
-            
-            // Crée une bounding box
-            const box = new THREE.Box3().setFromObject(model.object3D);
-            const size = new THREE.Vector3();
-            box.getSize(size);
-            
-            // Taille du marqueur (en mètres)
-            const markerSize = 0.1; // 10cm
-            
-            // Calcule l'échelle
-            const maxDimension = Math.max(size.x, size.y, size.z);
-            const scale = markerSize / maxDimension;
-            
-            // Applique l'échelle
-            model.setAttribute('scale', {
-              x: scale,
-              y: scale,
-              z: scale
-            });
-            
-            console.log("Modèle chargé avec échelle:", scale);
-          }, 500);
-        });
-      });
-    </script>
+ 
   </body>
 </html>
