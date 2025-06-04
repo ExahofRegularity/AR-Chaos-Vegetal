@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title> Chaos Végétal AR</title>
+    <title>Chaos Végétal AR</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
     <style>
       body { margin: 0; overflow: hidden; }
     </style>
@@ -20,30 +21,41 @@
       <a-entity camera></a-entity>
     </a-scene>
 
-   <script>
-  document.querySelector('a-scene').addEventListener('loaded', function() {
-    const marker = document.querySelector('a-marker');
-    const model = document.querySelector('a-entity[gltf-model]');
-    
-    // Taille approximative du marqueur (en mètres)
-    const markerSize = 0.1; // 10cm (ajustez selon votre marqueur physique)
-    
-    model.addEventListener('model-loaded', function() {
-      // Récupère la boîte englobante (bounding box) du modèle
-      const box = new THREE.Box3().setFromObject(model.object3D);
-      const size = box.getSize(new THREE.Vector3());
-      
-      // Calcule l'échelle pour que le plus grand côté du modèle = taille du marqueur
-      const maxDimension = Math.max(size.x, size.y, size.z);
-      const scale = markerSize / maxDimension;
-      
-      // Applique l'échelle uniformément
-      model.setAttribute('scale', `${scale} ${scale} ${scale}`);
-      
-      // Centre le modèle sur le marqueur
-      model.object3D.position.y = size.y * scale / 2; // Ajuste la hauteur pour qu'il "repose" sur le marqueur
-    });
-  });
-</script>
+    <script>
+      document.querySelector('a-scene').addEventListener('loaded', function() {
+        const model = document.getElementById('my-model');
+        
+        model.addEventListener('model-loaded', function() {
+          // Attend que Three.js soit prêt
+          setTimeout(() => {
+            if (!model.object3D) {
+              console.error("object3D non disponible");
+              return;
+            }
+            
+            // Crée une bounding box
+            const box = new THREE.Box3().setFromObject(model.object3D);
+            const size = new THREE.Vector3();
+            box.getSize(size);
+            
+            // Taille du marqueur (en mètres)
+            const markerSize = 0.1; // 10cm
+            
+            // Calcule l'échelle
+            const maxDimension = Math.max(size.x, size.y, size.z);
+            const scale = markerSize / maxDimension;
+            
+            // Applique l'échelle
+            model.setAttribute('scale', {
+              x: scale,
+              y: scale,
+              z: scale
+            });
+            
+            console.log("Modèle chargé avec échelle:", scale);
+          }, 500);
+        });
+      });
+    </script>
   </body>
 </html>
