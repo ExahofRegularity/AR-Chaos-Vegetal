@@ -20,17 +20,30 @@
       <a-entity camera></a-entity>
     </a-scene>
 
-    <script>
-      document.querySelector('a-scene').addEventListener('loaded', function() {
-        const markerWidth = 0.1; // 10cm
-        const modelSize = 2.0; // Taille originale
-        
-        const model = document.getElementById('my-model');
-        model.addEventListener('model-loaded', function() {
-          const scale = markerWidth / modelSize;
-          model.setAttribute('scale', scale + ' ' + scale + ' ' + scale);
-        });
-      });
-    </script>
+   <script>
+  document.querySelector('a-scene').addEventListener('loaded', function() {
+    const marker = document.querySelector('a-marker');
+    const model = document.querySelector('a-entity[gltf-model]');
+    
+    // Taille approximative du marqueur (en mètres)
+    const markerSize = 0.1; // 10cm (ajustez selon votre marqueur physique)
+    
+    model.addEventListener('model-loaded', function() {
+      // Récupère la boîte englobante (bounding box) du modèle
+      const box = new THREE.Box3().setFromObject(model.object3D);
+      const size = box.getSize(new THREE.Vector3());
+      
+      // Calcule l'échelle pour que le plus grand côté du modèle = taille du marqueur
+      const maxDimension = Math.max(size.x, size.y, size.z);
+      const scale = markerSize / maxDimension;
+      
+      // Applique l'échelle uniformément
+      model.setAttribute('scale', `${scale} ${scale} ${scale}`);
+      
+      // Centre le modèle sur le marqueur
+      model.object3D.position.y = size.y * scale / 2; // Ajuste la hauteur pour qu'il "repose" sur le marqueur
+    });
+  });
+</script>
   </body>
 </html>
