@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Chaos Végétal AR - Solution Définitive</title>
+    <title>Chaos Végétal AR - Solution Mobile</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.loaders.min.js"></script>
     <style>
         body { margin: 0; overflow: hidden; }
-        /* Solution cruciale : visibilité contrôlée par attribut plutôt que classe */
         [visible="false"] {
             display: none !important;
         }
@@ -21,19 +20,8 @@
         </a-assets>
         
         <a-marker type="pattern" url="marker.patt">
-            <!-- Modèle 1 visible par défaut -->
-            <a-entity id="model1" 
-                     gltf-model="#model1-asset" 
-                     scale="0.5 0.5 0.5"
-                     visible="true">
-            </a-entity>
-            
-            <!-- Modèle 2 caché par défaut -->
-            <a-entity id="model2" 
-                     gltf-model="#model2-asset" 
-                     scale="0.5 0.5 0.5"
-                     visible="false">
-            </a-entity>
+            <a-entity id="model1" gltf-model="#model1-asset" scale="0.5 0.5 0.5" visible="true"></a-entity>
+            <a-entity id="model2" gltf-model="#model2-asset" scale="0.5 0.5 0.5" visible="false"></a-entity>
         </a-marker>
         <a-entity camera></a-entity>
     </a-scene>
@@ -43,8 +31,19 @@
             const model1 = document.getElementById('model1');
             const model2 = document.getElementById('model2');
             let currentModel = model1;
+            let lastSwitchTime = 0;
+            const SWITCH_COOLDOWN = 300; // 300ms de délai minimum entre les changements
 
             function switchModel() {
+                const now = Date.now();
+                
+                // Vérifier le cooldown
+                if (now - lastSwitchTime < SWITCH_COOLDOWN) {
+                    return;
+                }
+                
+                lastSwitchTime = now;
+                
                 // Désactiver le modèle courant
                 currentModel.setAttribute('visible', 'false');
                 
@@ -57,18 +56,22 @@
                 console.log("Modèle actif:", currentModel.id);
             }
 
-            // Initialisation explicite
-            model1.setAttribute('visible', 'true');
-            model2.setAttribute('visible', 'false');
-
-            // Écouteurs d'événements
-            document.addEventListener('touchstart', switchModel, { passive: true });
-            document.addEventListener('click', switchModel);
+            // Gestion différenciée mobile/desktop
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // Mobile: seulement touchstart avec prevention du comportement par défaut
+                document.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    switchModel();
+                }, { passive: false });
+            } else {
+                // Desktop: seulement click
+                document.addEventListener('click', switchModel);
+            }
         });
     </script>
 </body>
-</html>
-
 
 
 
