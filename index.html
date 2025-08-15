@@ -25,7 +25,7 @@
     </a-entity>
   </a-marker>
 
-  <a-entity camera="fov: 80"></a-entity>
+  <a-entity camera="fov: 80" arjs-camera></a-entity>
 </a-scene>
 
 <script>
@@ -37,11 +37,14 @@
   let currentIndex = 0;
   const modelEntity = document.getElementById("my-model");
 
-  document.querySelector("a-scene").addEventListener("click", () => {
+  
+  document.querySelector("a-marker").addEventListener("click", () => {
     currentIndex = (currentIndex + 1) % models.length;
-   
+    
     const modelPath = `${models[currentIndex]}?t=${Date.now()}`;
     modelEntity.setAttribute("gltf-model", `url(${modelPath})`);
+    
+    modelEntity.setAttribute("scale", "0.7 0.7 0.7");
   });
 </script>
 </body>
