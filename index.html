@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Chaos Végétal AR</title>
+    <title>Chaos Végétal AR - Solution Définitive</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.loaders.min.js"></script>
     <style>
         body { margin: 0; overflow: hidden; }
-        .model { display: none; }
-        .model.active { display: block; }
+        /* Solution cruciale : visibilité contrôlée par attribut plutôt que classe */
+        [visible="false"] {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -19,39 +21,45 @@
         </a-assets>
         
         <a-marker type="pattern" url="marker.patt">
-            <!-- Modèle 1 actif au départ -->
-            <a-entity id="model1" gltf-model="#model1-asset" scale="0.5 0.5 0.5" class="model active"></a-entity>
+            <!-- Modèle 1 visible par défaut -->
+            <a-entity id="model1" 
+                     gltf-model="#model1-asset" 
+                     scale="0.5 0.5 0.5"
+                     visible="true">
+            </a-entity>
             
-            <!-- Modèle 2 inactif au départ -->
-            <a-entity id="model2" gltf-model="#model2-asset" scale="0.5 0.5 0.5" class="model"></a-entity>
+            <!-- Modèle 2 caché par défaut -->
+            <a-entity id="model2" 
+                     gltf-model="#model2-asset" 
+                     scale="0.5 0.5 0.5"
+                     visible="false">
+            </a-entity>
         </a-marker>
         <a-entity camera></a-entity>
     </a-scene>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const models = [
-                document.getElementById('model1'),
-                document.getElementById('model2')
-            ];
-            let currentIndex = 0;
+            const model1 = document.getElementById('model1');
+            const model2 = document.getElementById('model2');
+            let currentModel = model1;
 
             function switchModel() {
-                // Masquer tous les modèles
-                models.forEach(model => model.classList.remove('active'));
+                // Désactiver le modèle courant
+                currentModel.setAttribute('visible', 'false');
                 
-                // Basculer à l'index suivant
-                currentIndex = (currentIndex + 1) % models.length;
+                // Basculer vers l'autre modèle
+                currentModel = (currentModel === model1) ? model2 : model1;
                 
-                // Afficher le nouveau modèle
-                models[currentIndex].classList.add('active');
+                // Activer le nouveau modèle
+                currentModel.setAttribute('visible', 'true');
                 
-                console.log("Modèle actif:", currentIndex + 1);
+                console.log("Modèle actif:", currentModel.id);
             }
 
-            // Initialisation : s'assurer que seul le modèle 1 est visible
-            models[1].classList.remove('active');
-            models[0].classList.add('active');
+            // Initialisation explicite
+            model1.setAttribute('visible', 'true');
+            model2.setAttribute('visible', 'false');
 
             // Écouteurs d'événements
             document.addEventListener('touchstart', switchModel, { passive: true });
