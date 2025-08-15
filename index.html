@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chaos Végétal AR</title>
+
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
+
+  <style>
+    body { margin: 0; overflow: hidden; }
+  </style>
+</head>
+<body>
+<a-scene
+  vr-mode-ui="enabled: false"
+  embedded
+  arjs="sourceType: webcam; debugUIEnabled: false;"
+>
+  <a-marker type="pattern" url="marker.patt">
+    <a-entity id="my-model"
+      gltf-model="url(model1.glb)"
+      scale="0.7 0.7 0.7"
+      position="0 0 0"
+      rotation="0 0 0">
+    </a-entity>
+  </a-marker>
+
+  <a-entity camera></a-entity>
+</a-scene>
+
+<script>
+  // Liste de tes modèles GLB
+  const models = [
+    "model1.glb",
+    "model2.glb"
+  ];
+
+  let currentIndex = 0;
+  const modelEntity = document.getElementById("my-model");
+
+  // Quand on clique sur l'écran
+  document.addEventListener("click", () => {
+    // Passe au modèle suivant
+    currentIndex = (currentIndex + 1) % models.length;
+    modelEntity.setAttribute("gltf-model", `url(${models[currentIndex]})`);
+  });
+</script>
+ 
+  </body>
+  <!-- Deepseek a été utilisé pour corriger ce code-->
+</html>
