@@ -1,50 +1,75 @@
+
+
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   <title>Chaos Végétal AR</title>
-
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
-
   <style>
-    body { margin: 0; overflow: hidden; }
+    body { 
+      margin: 0; 
+      padding: 0; 
+      overflow: hidden; 
+      background-color: #000;
+    }
+    a-scene {
+      width: 100%;
+      height: 100vh;
+    }
   </style>
 </head>
 <body>
 <a-scene
   vr-mode-ui="enabled: false"
+  renderer="logarithmicDepthBuffer: true; precision: medium;"
   embedded
-  arjs="sourceType: webcam; debugUIEnabled: false;"
+  arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3; cameraParametersUrl: camera_para.dat;"
 >
-  <a-marker type="pattern" url="marker.patt" size="1">
-    <a-entity id="my-model"
-      gltf-model="url(model1.glb)"
+
+  <a-assets>
+    <a-asset-item id="model1" src="model1.glb"></a-asset-item>
+    <a-asset-item id="model2" src="model2.glb"></a-asset-item>
+  </a-assets>
+
+  <a-marker type="pattern" url="marker.patt" emitevents="true" cursor="rayOrigin: mouse">
+    <a-entity 
+      id="my-model"
+      gltf-model="#model1"
       scale="0.7 0.7 0.7"
       position="0 0 0"
-      rotation="0 0 0">
+      rotation="0 0 0"
+      animation="property: rotation; to: 0 360 0; loop: true; dur: 10000">
     </a-entity>
   </a-marker>
 
-  <a-entity camera="fov: 80" arjs-camera></a-entity>
+  <a-entity camera="fov: 60; zoom: 1;" arjs-camera></a-entity>
 </a-scene>
 
 <script>
-  const models = [
-    "model1.glb",
-    "model2.glb"
-  ];
-
+  const models = ["#model1", "#model2"];
   let currentIndex = 0;
   const modelEntity = document.getElementById("my-model");
 
-  
-  document.querySelector("a-marker").addEventListener("click", () => {
-    currentIndex = (currentIndex + 1) % models.length;
-    
-    const modelPath = `${models[currentIndex]}?t=${Date.now()}`;
-    modelEntity.setAttribute("gltf-model", `url(${modelPath})`);
-    
-    modelEntity.setAttribute("scale", "0.7 0.7 0.7");
+  document.querySelector('a-scene').addEventListener('loaded', () => {
+   
+    document.querySelector('a-marker').addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % models.length;
+      modelEntity.setAttribute('gltf-model', models[currentIndex]);
+      
+      modelEntity.setAttribute('scale', '0.7 0.7 0.7');
+      modelEntity.setAttribute('rotation', '0 0 0');
+    });
+  });
+
+  window.addEventListener('touchstart', (e) => {
+    if(e.touches.length > 0) {
+      currentIndex = (currentIndex + 1) % models.length;
+      modelEntity.setAttribute('gltf-model', models[currentIndex]);
+      modelEntity.setAttribute('scale', '0.7 0.7 0.7');
+    }
   });
 </script>
 </body>
