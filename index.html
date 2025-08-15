@@ -16,7 +16,7 @@
   embedded
   arjs="sourceType: webcam; debugUIEnabled: false;"
 >
-  <a-marker type="pattern" url="marker.patt">
+  <a-marker type="pattern" url="marker.patt" size="1">
     <a-entity id="my-model"
       gltf-model="url(model1.glb)"
       scale="0.7 0.7 0.7"
@@ -25,11 +25,10 @@
     </a-entity>
   </a-marker>
 
-  <a-entity camera></a-entity>
+  <a-entity camera="fov: 80"></a-entity>
 </a-scene>
 
 <script>
-  // Liste de tes modèles GLB
   const models = [
     "model1.glb",
     "model2.glb"
@@ -38,14 +37,12 @@
   let currentIndex = 0;
   const modelEntity = document.getElementById("my-model");
 
-  // Quand on clique sur l'écran
-  document.addEventListener("click", () => {
-    // Passe au modèle suivant
+  document.querySelector("a-scene").addEventListener("click", () => {
     currentIndex = (currentIndex + 1) % models.length;
-    modelEntity.setAttribute("gltf-model", `url(${models[currentIndex]})`);
+   
+    const modelPath = `${models[currentIndex]}?t=${Date.now()}`;
+    modelEntity.setAttribute("gltf-model", `url(${modelPath})`);
   });
 </script>
- 
-  </body>
-  <!-- Deepseek a été utilisé pour corriger ce code-->
+</body>
 </html>
