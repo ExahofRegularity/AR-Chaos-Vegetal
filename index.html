@@ -4,31 +4,18 @@
     <title>Chaos Végétal AR</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
-    <!-- Charger le composant gltf-model -->
     <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.loaders.min.js"></script>
-    <style>
-        body { margin: 0; overflow: hidden; }
-        /* Animation de fondu */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-    </style>
+    <style> body { margin: 0; overflow: hidden; } </style>
 </head>
 <body>
     <a-scene vr-mode-ui="enabled: false" embedded arjs="sourceType: webcam; debugUIEnabled: false;">
         <a-assets>
-            <!-- Précharger les modèles -->
             <a-asset-item id="model1" src="model1.glb"></a-asset-item>
             <a-asset-item id="model2" src="model2.glb"></a-asset-item>
         </a-assets>
         
         <a-marker type="pattern" url="marker.patt">
-            <a-entity id="my-model" gltf-model="#model1" scale="0.5 0.5 0.5" position="0 0 0" rotation="0 0 0">
-            </a-entity>
+            <a-entity id="my-model" gltf-model="#model1" scale="0.5 0.5 0.5"></a-entity>
         </a-marker>
         <a-entity camera></a-entity>
     </a-scene>
@@ -38,38 +25,18 @@
             const modelEntity = document.getElementById('my-model');
             const models = ["#model1", "#model2"];
             let currentIndex = 0;
-            let isChanging = false; // Pour éviter les changements pendant la transition
 
-            function changeModel() {
-                if (isChanging) return;
-                
-                isChanging = true;
-                
-                // Ajouter une classe pour le fondu
-                modelEntity.classList.add('fade-in');
-                
-                // Changer le modèle après un léger délai
-                setTimeout(() => {
-                    currentIndex = (currentIndex + 1) % models.length;
-                    modelEntity.setAttribute('gltf-model', models[currentIndex]);
-                    
-                    // Retirer la classe après l'animation
-                    setTimeout(() => {
-                        modelEntity.classList.remove('fade-in');
-                        isChanging = false;
-                    }, 500);
-                }, 100);
+            function switchModel() {
+                currentIndex = (currentIndex + 1) % models.length;
+                modelEntity.setAttribute('gltf-model', models[currentIndex]);
+                console.log("Modèle changé pour:", models[currentIndex]); // Debug
             }
 
-            // Sur mobile
-            document.addEventListener('touchstart', function() {
-                changeModel();
-            }, { passive: true });
-
-            // Sur PC
-            document.addEventListener('click', function() {
-                changeModel();
-            });
+            // Mobile
+            document.addEventListener('touchstart', switchModel, { passive: true });
+            
+            // PC
+            document.addEventListener('click', switchModel);
         });
     </script>
 </body>
