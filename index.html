@@ -1,77 +1,46 @@
-
-
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
   <title>Chaos Végétal AR</title>
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
   <style>
-    body { 
-      margin: 0; 
-      padding: 0; 
-      overflow: hidden; 
-      background-color: #000;
-    }
-    a-scene {
-      width: 100%;
-      height: 100vh;
-    }
+    body { margin: 0; overflow: hidden; }
   </style>
 </head>
 <body>
-<a-scene
-  vr-mode-ui="enabled: false"
-  renderer="logarithmicDepthBuffer: true; precision: medium;"
-  embedded
-  arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
->
+  <a-scene vr-mode-ui="enabled: false" embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+    <a-marker type="pattern" url="marker.patt">
+      <a-entity id="my-model" 
+                gltf-model="url(model1.glb)" 
+                scale="0.5 0.5 0.5" 
+                position="0 0 0" 
+                rotation="0 0 0">
+      </a-entity>
+    </a-marker>
+    <a-entity camera></a-entity>
+  </a-scene>
 
-  <a-assets>
-    <a-asset-item id="model1" src="model1.glb"></a-asset-item>
-    <a-asset-item id="model2" src="model2.glb"></a-asset-item>
-  </a-assets>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const modelEntity = document.getElementById('my-model');
+      const models = ["url(model1.glb)", "url(model2.glb)"];
+      let currentIndex = 0;
 
-  <a-marker type="pattern" url="marker.patt" emitevents="true" cursor="rayOrigin: mouse">
-    <a-entity 
-      id="my-model"
-      gltf-model="#model1"
-      scale="0.7 0.7 0.7"
-      position="0 0 0"
-      rotation="0 0 0"
-      animation="property: rotation; to: 0 360 0; loop: true; dur: 10000">
-    </a-entity>
-  </a-marker>
+      // Sur mobile, on écoute les touches d'écran
+      document.addEventListener('touchstart', function() {
+        // Alterner entre 0 et 1
+        currentIndex = (currentIndex + 1) % models.length;
+        modelEntity.setAttribute('gltf-model', models[currentIndex]);
+      }, { passive: true });
 
-  <a-entity camera="fov: 60; zoom: 1;" arjs-camera></a-entity>
-</a-scene>
-
-<script>
-  const models = ["#model1", "#model2"];
-  let currentIndex = 0;
-  const modelEntity = document.getElementById("my-model");
-
-  document.querySelector('a-scene').addEventListener('loaded', () => {
-   
-    document.querySelector('a-marker').addEventListener('click', () => {
-      currentIndex = (currentIndex + 1) % models.length;
-      modelEntity.setAttribute('gltf-model', models[currentIndex]);
-      
-      modelEntity.setAttribute('scale', '0.7 0.7 0.7');
-      modelEntity.setAttribute('rotation', '0 0 0');
+      // Bonus : aussi sur clic pour tester sur PC
+      document.addEventListener('click', function() {
+        currentIndex = (currentIndex + 1) % models.length;
+        modelEntity.setAttribute('gltf-model', models[currentIndex]);
+      });
     });
-  });
-
-  window.addEventListener('touchstart', (e) => {
-    if(e.touches.length > 0) {
-      currentIndex = (currentIndex + 1) % models.length;
-      modelEntity.setAttribute('gltf-model', models[currentIndex]);
-      modelEntity.setAttribute('scale', '0.7 0.7 0.7');
-    }
-  });
-</script>
+  </script>
 </body>
 </html>
 
